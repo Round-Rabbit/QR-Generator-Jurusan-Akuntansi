@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Generator | Jurusan Akuntansi</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('Background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    main {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 30px;
+      max-width: 600px;
+      margin: 50px auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    header img {
+      width: 80px;
+      margin-bottom: 10px;
+    }
+
+    header h1, h2 {
+      margin: 5px 0;
+    }
+
+    input, label {
+      padding: 10px;
+      width: 100%;
+      margin-top: 15px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      display: block;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #00aaff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .qr {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #download-btn {
+      margin-top: 20px;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    a {
+      color: #00ccff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="Logo.png" alt="Logo Instansi" id="logo-preview"/>
+      <h1>QR Generator</h1>
+      <h2>Program Studi Sarjana Akuntansi</h2>
+    </header>
+
+    <p>Masukkan link untuk membuat QR Code:</p>
+    <input type="text" id="link" placeholder="https://contoh.com/..." />
+
+    <label for="logo">Upload logo (PNG/JPG/HEIC):</label>
+    <input type="file" id="logo" accept="image/*" />
+
+    <button onclick="generateQR()">Buat QR</button>
+
+    <div class="qr">
+      <canvas id="qr-canvas" width="300" height="300"></canvas>
+      <button id="download-btn" style="display: none;" onclick="downloadQR()">Download QR</button>
+    </div>
+
+    <footer>
+      &copy; <span id="year"></span> RoundRabbit. Seluruh hak cipta dilindungi.<br/>
+      Dibuat oleh Ar. Al-Ghafiqi • <a href="https://instagram.com/fiqifriday" target="_blank">📷 Instagram @fiqifriday</a>
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function generateQR() {
+      const canvas = document.getElementById("qr-canvas");
+      const ctx = canvas.getContext("2d");
+      const link = document.getElementById("link").value.trim();
+      const logoInput = document.getElementById("logo");
+      const downloadBtn = document.getElementById("download-btn");
+
+      if (!link.startsWith("http")) {
+        alert("Masukkan URL yang valid (dimulai dengan http atau https).");
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const qr = new QRious({
+        value: link,
+        size: 300,
+        level: 'H',
+        background: 'white',
+        foreground: 'black'
+      });
+
+      const tempImg = new Image();
+      tempImg.src = qr.toDataURL();
+      tempImg.onload = function () {
+        ctx.drawImage(tempImg, 0, 0);
+
+        if (logoInput.files && logoInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const logo = new Image();
+            logo.src = e.target.result;
+            logo.onload = function () {
+              const size = 60;
+              const x = (canvas.width - size) / 2;
+              const y = (canvas.height - size) / 2;
+
+              ctx.fillStyle = "#fff";
+              ctx.fillRect(x - 4, y - 4, size + 8, size + 8); // border putih
+              ctx.drawImage(logo, x, y, size, size);
+
+              downloadBtn.style.display = "inline-block";
+            };
+          };
+          reader.readAsDataURL(logoInput.files[0]);
+        } else {
+          downloadBtn.style.display = "inline-block";
+        }
+      };
+    }
+
+    function downloadQR() {
+      const canvas = document.getElementById("qr-canvas");
+      const link = document.createElement('a');
+      link.download = 'qr-code.png';
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+  </script>
+</body>
+</html>
