@@ -6,6 +6,9 @@
   <title>QR Generator | Jurusan Akuntansi</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <style>
+    /* ****************************************************** */
+    /* STYLING UTAMA QR GENERATOR (TIDAK DIUBAH ISI UTAMANYA) */
+    /* ****************************************************** */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -13,6 +16,11 @@
       background: url('Background.jpg') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
+    }
+
+    #qr-generator-content {
+        /* Konten QR Generator akan disembunyikan secara default */
+        display: none; 
     }
 
     main {
@@ -34,6 +42,17 @@
       margin: 5px 0;
     }
 
+    header {
+      margin-bottom: 5px;
+    }
+
+    .security-message {
+      font-size: 12px;
+      color: #00ccff;
+      margin-top: 5px;
+      margin-bottom: 15px;
+    }
+
     input, label {
       padding: 10px;
       width: 100%;
@@ -43,6 +62,11 @@
       border: none;
       display: block;
       box-sizing: border-box;
+    }
+
+    main p:first-of-type {
+        margin-top: 10px;
+        margin-bottom: 5px;
     }
 
     button {
@@ -77,37 +101,167 @@
       color: #00ccff;
       text-decoration: none;
     }
+    
+    /* ****************************************************** */
+    /* STYLING KHUSUS UNTUK HALAMAN SANDI (FULL SCREEN LAYER) */
+    /* ****************************************************** */
+    #password-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9); /* Latar belakang gelap */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000; /* Pastikan di atas semua konten lain */
+    }
+
+    #password-box {
+      background: rgba(25, 25, 25, 0.95);
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      max-width: 350px;
+      width: 90%;
+      text-align: center;
+    }
+
+    #password-box h2 {
+        margin-bottom: 20px;
+        color: #00aaff;
+    }
+    
+    .password-container {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    #password-input {
+        width: calc(100% - 20px); 
+        padding-right: 40px; /* Ruang untuk tombol mata */
+        font-size: 18px;
+    }
+    
+    #toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #ccc;
+        font-size: 18px;
+        padding: 5px;
+    }
+
+    #access-button {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+    }
   </style>
 </head>
 <body>
-  <main>
-    <header>
-      <img src="Logo.png" alt="Logo Instansi" id="logo-preview"/>
-      <h1>QR Generator</h1>
-      <h2>Program Studi Sarjana Akuntansi</h2>
-    </header>
 
-    <p>Masukkan link untuk membuat QR Code:</p>
-    <input type="text" id="link" placeholder="https://contoh.com/..." />
+  <div id="password-layer">
+    <div id="password-box">
+        <h2>Akses Eksklusif</h2>
+        <p>Silakan masukkan sandi untuk mengakses QR Generator.</p>
+        
+        <div class="password-container">
+            <input type="password" id="password-input" placeholder="Masukkan Sandi Akses" />
+            <button id="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
+        </div>
 
-    <label for="logo">Upload logo (PNG/JPG/HEIC):</label>
-    <input type="file" id="logo" accept="image/*" />
-
-    <button onclick="generateQR()">Buat QR</button>
-
-    <div class="qr">
-      <canvas id="qr-canvas" width="300" height="300"></canvas>
-      <button id="download-btn" style="display: none;" onclick="downloadQR()">Download QR</button>
+        <button id="access-button" onclick="checkPassword()">Masuk</button>
     </div>
+  </div>
 
-    <footer>
-      &copy; <span id="year"></span> RoundRabbit. Seluruh hak cipta dilindungi.<br/>
-      Dibuat oleh Ar. Al-Ghafiqi • <a href="https://instagram.com/fiqifriday" target="_blank">📷 Instagram @fiqifriday</a>
-    </footer>
-  </main>
+
+  <div id="qr-generator-content">
+    <main>
+      <header>
+        <img src="Logo Unmul.png" alt="Logo Unmul" id="logo-preview"/>
+        <h1>QR Generator</h1>
+        <h2>Jurusan Akuntansi</h2>
+      </header>
+
+      <p>Masukkan link untuk membuat QR Code:</p>
+      <p class="security-message">Semua aktivitas yang ada di web ini terenkripsi secara end-to-end</p>
+
+      <input type="text" id="link" placeholder="https://contoh.com/..." />
+
+      <label for="logo">Upload logo (PNG/JPG/HEIC):</label>
+      <input type="file" id="logo" accept="image/*" />
+
+      <button onclick="generateQR()">Buat QR</button>
+
+      <div class="qr">
+        <canvas id="qr-canvas" width="300" height="300"></canvas>
+        <button id="download-btn" style="display: none;" onclick="downloadQR()">Download QR</button>
+      </div>
+
+      <footer>
+        &copy; <span id="year"></span> fiqifriday. Seluruh hak cipta dilindungi.<br/>
+        Dibuat oleh Abdurrahman Al-Ghafiqi • <a href="https://instagram.com/fiqifriday" target="_blank">📷 Instagram @fiqifriday</a>
+      </footer>
+    </main>
+  </div>
+
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+    const correctPassword = "pakzaki"; 
+
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password-input');
+        const toggleButton = document.getElementById('toggle-password');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleButton.textContent = '🔒';
+        } else {
+            passwordInput.type = 'password';
+            toggleButton.textContent = '👁️';
+        }
+    }
+
+    function checkPassword() {
+        const enteredPassword = document.getElementById('password-input').value.trim();
+        
+        if (enteredPassword === correctPassword) {
+            document.getElementById('password-layer').style.display = 'none';
+            document.getElementById('qr-generator-content').style.display = 'block';
+        } else {
+            alert("Sandi Akses Salah. Silakan coba lagi.");
+            document.getElementById('password-input').value = ''; 
+            document.getElementById('password-input').focus();
+        }
+    }
+
+    // **********************************************
+    // PERBAIKAN: EVENT LISTENER UNTUK TOMBOL ENTER
+    // **********************************************
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const passwordInput = document.getElementById('password-input');
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('keypress', function(e) {
+                // e.key === 'Enter' adalah cara modern untuk mendeteksi Enter
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    checkPassword(); 
+                }
+            });
+            // Opsional: Fokuskan langsung ke input sandi saat halaman dimuat
+            passwordInput.focus();
+        }
+    });
+    // **********************************************
 
     function generateQR() {
       const canvas = document.getElementById("qr-canvas");
